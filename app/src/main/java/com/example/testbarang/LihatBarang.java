@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class LihatBarang extends AppCompatActivity {
 
-    private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference database;
     private RecyclerView rvView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -36,15 +36,17 @@ public class LihatBarang extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         rvView.setLayoutManager(layoutManager);
 
+        database = FirebaseDatabase.getInstance().getReference();
+
         //mengambil data barang dari Firebase Realtime DB
         database.child("Barang").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(DataSnapshot snapshot) {
                 //saat ada data baru, masukkan datanya ke arraylist
                 daftarBarang = new ArrayList<>();
                 for (DataSnapshot noteDataSnapshot : snapshot.getChildren()){
                     Barang barang = noteDataSnapshot.getValue(Barang.class);
-                    barang.setKode(noteDataSnapshot.getKey());
+                    barang.setKey(noteDataSnapshot.getKey());
 
                     daftarBarang.add(barang);
                 }
@@ -54,7 +56,7 @@ public class LihatBarang extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(DatabaseError error) {
                 System.out.println(error.getDetails() + "" + error.getMessage());
             }
         });
